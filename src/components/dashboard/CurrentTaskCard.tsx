@@ -11,12 +11,15 @@ import {
   Loader2, 
   Clock, 
   ShieldCheck,
-  GitCommit,
-  ArrowRight
+  Plus
 } from 'lucide-react';
 import { useKairo } from '../../context/KairoContext';
 
-export const CurrentTaskCard: React.FC = () => {
+interface CurrentTaskCardProps {
+  onOpenCreateTask?: () => void;
+}
+
+export const CurrentTaskCard: React.FC<CurrentTaskCardProps> = ({ onOpenCreateTask }) => {
   const { 
     currentTask, 
     kairoStatus, 
@@ -32,14 +35,25 @@ export const CurrentTaskCard: React.FC = () => {
 
   if (!currentTask) {
     return (
-      <div className="w-full p-6 rounded-2xl bg-[#0A0A0A] border border-[#222222] text-center space-y-2">
-        <div className="w-8 h-8 rounded-xl bg-[#111111] mx-auto flex items-center justify-center text-[#666666]">
+      <div className="w-full p-6 rounded-2xl bg-[#0A0A0A] border border-[#222222] text-center space-y-3 shadow-vercel-sm">
+        <div className="w-9 h-9 rounded-xl bg-[#111111] mx-auto flex items-center justify-center text-[#666666]">
           <Clock className="w-4 h-4" />
         </div>
-        <h3 className="text-xs font-semibold text-white font-sans">No Active Pipeline</h3>
-        <p className="text-[11px] text-[#666666] font-mono">
-          Task queue is empty. Dispatch a command via AI prompt or voice.
-        </p>
+        <div>
+          <h3 className="text-xs font-semibold text-white font-sans">No Active Pipeline Task</h3>
+          <p className="text-[11px] text-[#666666] font-mono mt-0.5">
+            Queue is empty. Create a task via natural language or manual input.
+          </p>
+        </div>
+        {onOpenCreateTask && (
+          <button
+            onClick={onOpenCreateTask}
+            className="inline-flex items-center gap-1.5 py-1.5 px-3 rounded-xl vercel-btn-primary text-xs font-semibold"
+          >
+            <Plus className="w-3.5 h-3.5 stroke-[3]" />
+            <span>Create First Task</span>
+          </button>
+        )}
       </div>
     );
   }
@@ -199,9 +213,8 @@ export const CurrentTaskCard: React.FC = () => {
         </div>
       )}
 
-      {/* Action Bar (Vercel Style) */}
+      {/* Action Bar */}
       <div className="grid grid-cols-4 gap-2 pt-3 mt-3 border-t border-[#1A1A1A]">
-        {/* Pause / Resume / Start */}
         {currentTask.status === 'waiting' ? (
           <button
             onClick={() => startTask(currentTask.id)}
@@ -228,7 +241,6 @@ export const CurrentTaskCard: React.FC = () => {
           </button>
         )}
 
-        {/* Skip */}
         <button
           onClick={skipCurrentTask}
           className="flex items-center justify-center gap-1 py-2 px-2 rounded-xl vercel-btn-secondary text-xs font-medium"
@@ -237,7 +249,6 @@ export const CurrentTaskCard: React.FC = () => {
           <span>Skip</span>
         </button>
 
-        {/* Complete */}
         <button
           onClick={completeCurrentTask}
           className="flex items-center justify-center gap-1 py-2 px-2 rounded-xl bg-white hover:bg-[#EAEAEA] text-black text-xs font-semibold rounded-xl"

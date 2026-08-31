@@ -22,7 +22,7 @@ export const KairoAppContent: React.FC = () => {
   const [isNotificationDrawerOpen, setIsNotificationDrawerOpen] = useState(false);
 
   return (
-    <div className="w-full min-h-screen flex flex-col relative bg-[#000000] text-[#EDEDED] font-sans">
+    <div className="w-full flex-1 flex flex-col relative bg-[#000000] text-[#EDEDED] font-sans">
       {/* Mobile Top Status Bar */}
       <StatusBar />
 
@@ -32,8 +32,8 @@ export const KairoAppContent: React.FC = () => {
         onOpenCreateTask={() => setIsCreateModalOpen(true)}
       />
 
-      {/* Main Tab Content Viewport */}
-      <main className="w-full flex-1 px-4 pt-3 overflow-y-auto overscroll-none">
+      {/* Main Content Area */}
+      <main className="w-full flex-1 px-4 pt-4 pb-36 overflow-y-visible">
         {currentTab === 'dashboard' && (
           <DashboardTab
             onSelectTab={setCurrentTab}
@@ -61,23 +61,23 @@ export const KairoAppContent: React.FC = () => {
         )}
       </main>
 
-      {/* Bottom Navigation Dock */}
+      {/* Floating Bottom Nav */}
       <BottomNav
         currentTab={currentTab}
         onSelectTab={setCurrentTab}
         onOpenCreateTask={() => setIsCreateModalOpen(true)}
       />
 
-      {/* Execution Confirmation Modal Overlay */}
+      {/* Confirmation Modal */}
       <ConfirmationModal />
 
-      {/* Create Task Modal (AI + Manual) */}
+      {/* Create Task Modal */}
       <CreateTaskModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
       />
 
-      {/* Task Detail / Edit Modal */}
+      {/* Task Detail Modal */}
       <TaskDetailModal
         task={selectedTask}
         isOpen={!!selectedTask}

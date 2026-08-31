@@ -1,5 +1,4 @@
 import React from 'react';
-import { ArrowRight, Terminal } from 'lucide-react';
 import { LaptopStatusCard } from './LaptopStatusCard';
 import { KairoStatusCard } from './KairoStatusCard';
 import { CurrentTaskCard } from './CurrentTaskCard';
@@ -18,8 +17,8 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
   onOpenCreateTask 
 }) => {
   return (
-    <div className="w-full space-y-3 pb-28 pt-1">
-      {/* Vercel Command-K Style AI Task Creator Bar */}
+    <div className="w-full space-y-4">
+      {/* Vercel Command-K Prompt Bar */}
       <div 
         onClick={onOpenCreateTask}
         className="w-full p-3 rounded-2xl bg-[#0A0A0A] border border-[#262626] hover:border-[#444444] shadow-vercel-sm flex items-center justify-between gap-3 cursor-pointer transition-all group"
@@ -46,7 +45,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
       <KairoStatusCard />
 
       {/* Active Pipeline Card */}
-      <CurrentTaskCard />
+      <CurrentTaskCard onOpenCreateTask={onOpenCreateTask} />
 
       {/* Upcoming In Queue */}
       <UpcomingTaskCard onGoToQueue={() => onSelectTab('queue')} />
