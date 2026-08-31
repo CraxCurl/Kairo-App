@@ -1,18 +1,14 @@
 import React, { useState } from 'react';
 import { 
   X, 
-  Sparkles, 
-  Wand2, 
   Send, 
-  Calendar, 
-  Clock, 
   ShieldCheck, 
-  Tag, 
-  ListTree, 
   Loader2, 
   Check, 
-  AlertCircle,
-  Plus
+  Plus,
+  Terminal,
+  ListTree,
+  Sparkles
 } from 'lucide-react';
 import { useKairo } from '../../context/KairoContext';
 import { Priority, TaskTrigger, Task } from '../../types';
@@ -60,12 +56,11 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ isOpen, onClos
       const created = await createTasksFromNaturalLanguage(prompt);
       setAiResultPreview(created);
       setIsAiProcessing(false);
-      // Auto close after brief success preview
       setTimeout(() => {
         setNlPrompt('');
         setAiResultPreview(null);
         onClose();
-      }, 1400);
+      }, 1200);
     } catch (err) {
       console.error(err);
       setIsAiProcessing(false);
@@ -106,87 +101,77 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ isOpen, onClos
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-in fade-in duration-200">
-      <div className="w-full max-w-lg bg-[#11121F] border border-purple-500/30 rounded-3xl p-5 shadow-[0_0_50px_rgba(124,110,248,0.2)] relative overflow-hidden max-h-[90vh] flex flex-col">
-        {/* Glow ambient highlight */}
-        <div className="absolute top-0 right-0 w-48 h-48 bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
-
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-150">
+      <div className="w-full max-w-lg bg-[#0A0A0A] border border-[#282828] rounded-2xl p-5 shadow-vercel-lg relative overflow-hidden max-h-[90vh] flex flex-col font-sans">
+        
         {/* Modal Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-white/10 shrink-0">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-300">
-              <Sparkles className="w-4 h-4" />
+        <div className="flex items-center justify-between pb-3 border-b border-[#1A1A1A] shrink-0">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-lg bg-[#141414] border border-[#262626] flex items-center justify-center text-white font-mono text-[10px]">
+              &gt;
             </div>
             <div>
-              <h3 className="font-bold text-sm text-white tracking-wide">
+              <h3 className="font-bold text-xs text-white uppercase tracking-wider font-mono">
                 Create Remote Task
               </h3>
-              <p className="text-[11px] text-slate-400">
-                Dispatched to laptop agent execution queue
-              </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-white border border-white/5 transition-all"
+            className="p-1 rounded-lg bg-[#111111] hover:bg-[#1C1C1C] text-[#888888] hover:text-white border border-[#242424] transition-colors"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        {/* Mode Switcher Pill */}
-        <div className="grid grid-cols-2 gap-1.5 p-1 rounded-2xl bg-slate-900/80 border border-white/5 my-3 shrink-0">
+        {/* Mode Switcher */}
+        <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-[#111111] border border-[#222222] my-3 shrink-0 font-mono text-xs">
           <button
             onClick={() => setMode('ai')}
-            className={`py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all ${
+            className={`py-1.5 rounded-lg font-medium transition-all ${
               mode === 'ai'
-                ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-glow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-white text-black font-semibold shadow-sm'
+                : 'text-[#888888] hover:text-white'
             }`}
           >
-            <Wand2 className="w-3.5 h-3.5" />
-            <span>Natural Language AI</span>
+            Natural Language AI
           </button>
 
           <button
             onClick={() => setMode('manual')}
-            className={`py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all ${
+            className={`py-1.5 rounded-lg font-medium transition-all ${
               mode === 'manual'
-                ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-glow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-white text-black font-semibold shadow-sm'
+                : 'text-[#888888] hover:text-white'
             }`}
           >
-            <ListTree className="w-3.5 h-3.5" />
-            <span>Manual Form</span>
+            Manual Form
           </button>
         </div>
 
         {/* Mode 1: Natural Language AI */}
         {mode === 'ai' ? (
-          <div className="space-y-4 overflow-y-auto pr-1">
-            <div className="space-y-2">
-              <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-purple-400" />
-                <span>Tell Kairo what you want done on your laptop:</span>
+          <div className="space-y-3.5 overflow-y-auto pr-1">
+            <div className="space-y-1.5">
+              <label className="text-xs font-mono text-[#888888]">
+                Instruct Kairo Desktop Agent:
               </label>
-              <div className="relative">
-                <textarea
-                  value={nlPrompt}
-                  onChange={(e) => setNlPrompt(e.target.value)}
-                  placeholder="e.g. Tomorrow when I open my laptop, remind me to finish my Java assignment, then solve two LeetCode problems."
-                  rows={4}
-                  className="w-full p-3.5 rounded-2xl bg-slate-950/70 border border-purple-500/30 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-all resize-none font-sans"
-                />
-              </div>
+              <textarea
+                value={nlPrompt}
+                onChange={(e) => setNlPrompt(e.target.value)}
+                placeholder="e.g. Tomorrow when I open my laptop, remind me to finish my Java assignment, then solve two LeetCode problems."
+                rows={3}
+                className="w-full p-3 rounded-xl bg-black border border-[#282828] text-white text-xs placeholder:text-[#555555] focus:outline-none focus:border-white transition-all resize-none font-mono"
+              />
             </div>
 
             {/* Example Prompt Chips */}
-            <div className="space-y-1.5">
-              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                Quick Prompts (Tap to test):
+            <div className="space-y-1">
+              <span className="text-[10px] font-mono text-[#666666] uppercase">
+                Presets (Click to populate):
               </span>
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 {examplePrompts.map((p, i) => (
                   <button
                     key={i}
@@ -194,152 +179,99 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ isOpen, onClos
                       setNlPrompt(p);
                       handleAiParse(p);
                     }}
-                    className="w-full text-left p-2.5 rounded-xl bg-slate-900/60 hover:bg-purple-950/40 border border-white/5 hover:border-purple-500/30 text-slate-300 hover:text-purple-200 text-xs transition-all flex items-center justify-between gap-2 group"
+                    className="w-full text-left p-2 rounded-lg bg-[#111111] hover:bg-[#171717] border border-[#222222] text-[#888888] hover:text-white text-xs font-mono transition-all truncate"
                   >
-                    <span className="truncate">&ldquo;{p}&rdquo;</span>
-                    <Sparkles className="w-3 h-3 text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                    &gt; {p}
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* AI Success / Processing State */}
+            {/* Processing / Result Preview */}
             {isAiProcessing && (
-              <div className="p-3.5 rounded-2xl bg-purple-950/40 border border-purple-500/40 flex items-center gap-3 text-xs text-purple-200 animate-pulse">
-                <Loader2 className="w-4 h-4 animate-spin text-purple-400" />
-                <span>Laptop LLM Agent is structuring tasks, dependencies & triggers...</span>
+              <div className="p-3 rounded-xl bg-[#111111] border border-[#333333] flex items-center gap-2 text-xs font-mono text-[#EDEDED] animate-pulse">
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <span>Laptop agent parsing instructions...</span>
               </div>
             )}
 
             {aiResultPreview && (
-              <div className="p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 space-y-2 text-xs text-emerald-200 animate-in fade-in duration-200">
-                <div className="flex items-center gap-2 font-bold text-emerald-300">
-                  <Check className="w-4 h-4 stroke-[3]" />
-                  <span>Dispatched {aiResultPreview.length} structured task(s) to laptop queue!</span>
-                </div>
-                <div className="space-y-1 pl-6">
-                  {aiResultPreview.map((t, idx) => (
-                    <div key={t.id} className="text-slate-300">
-                      {idx + 1}. <span className="font-semibold text-white">{t.name}</span> — <span className="text-purple-300">{t.trigger.replace('_', ' ')}</span>
-                    </div>
-                  ))}
+              <div className="p-3 rounded-xl bg-[#002B1B] border border-[#00E599]/30 text-xs font-mono text-[#00E599] space-y-1">
+                <div className="flex items-center gap-1.5 font-bold">
+                  <Check className="w-3.5 h-3.5 stroke-[3]" />
+                  <span>Dispatched {aiResultPreview.length} tasks to laptop queue</span>
                 </div>
               </div>
             )}
 
-            {/* Submit Button */}
+            {/* Submit */}
             <button
               onClick={() => handleAiParse()}
               disabled={isAiProcessing || !nlPrompt.trim()}
-              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-500 hover:opacity-90 active:scale-95 disabled:opacity-50 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-glow-sm"
+              className="w-full py-2.5 rounded-xl vercel-btn-primary disabled:opacity-40 text-xs font-semibold flex items-center justify-center gap-2"
             >
               {isAiProcessing ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Analyzing with Laptop LLM...</span>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Synthesizing...</span>
                 </>
               ) : (
                 <>
-                  <Send className="w-4 h-4" />
-                  <span>Send to Laptop Agent</span>
+                  <Send className="w-3.5 h-3.5" />
+                  <span>Dispatch to Laptop</span>
                 </>
               )}
             </button>
           </div>
         ) : (
-          /* Mode 2: Manual Structured Form */
-          <form onSubmit={handleManualSubmit} className="space-y-3.5 overflow-y-auto pr-1">
-            {/* Task Name */}
+          /* Mode 2: Manual Form */
+          <form onSubmit={handleManualSubmit} className="space-y-3 overflow-y-auto pr-1 text-xs">
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-300">Task Name *</label>
+              <label className="text-[#888888] font-mono">Task Name *</label>
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Complete Java assignment"
-                className="w-full p-2.5 rounded-xl bg-slate-950/70 border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-purple-400 transition-all font-sans"
+                className="w-full p-2 rounded-xl bg-black border border-[#282828] text-white focus:outline-none focus:border-white transition-all font-mono"
               />
             </div>
 
-            {/* Description */}
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-300">Description</label>
+              <label className="text-[#888888] font-mono">Description</label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Details or specific commands for Kairo..."
                 rows={2}
-                className="w-full p-2.5 rounded-xl bg-slate-950/70 border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-purple-400 transition-all resize-none"
+                placeholder="Execution instructions..."
+                className="w-full p-2 rounded-xl bg-black border border-[#282828] text-white focus:outline-none focus:border-white transition-all resize-none font-mono"
               />
             </div>
 
-            {/* Trigger Selector */}
-            <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-300">Trigger</label>
-              <select
-                value={trigger}
-                onChange={(e) => setTrigger(e.target.value as TaskTrigger)}
-                className="w-full p-2.5 rounded-xl bg-slate-950/90 border border-white/10 text-white text-xs focus:outline-none focus:border-purple-400 transition-all"
-              >
-                <option value="next_startup">Next Laptop Startup</option>
-                <option value="today">Today</option>
-                <option value="tomorrow">Tomorrow</option>
-                <option value="specific_datetime">Specific Date & Time</option>
-                <option value="after_task">After Another Task</option>
-                <option value="manual">Manual Execution Only</option>
-              </select>
-            </div>
-
-            {/* Conditional: Specific Date/Time */}
-            {trigger === 'specific_datetime' && (
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-1">
-                  <label className="text-[11px] text-slate-400">Date</label>
-                  <input
-                    type="date"
-                    value={scheduledDate}
-                    onChange={(e) => setScheduledDate(e.target.value)}
-                    className="w-full p-2 rounded-xl bg-slate-950 border border-white/10 text-white text-xs"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[11px] text-slate-400">Time</label>
-                  <input
-                    type="time"
-                    value={scheduledTime}
-                    onChange={(e) => setScheduledTime(e.target.value)}
-                    className="w-full p-2 rounded-xl bg-slate-950 border border-white/10 text-white text-xs"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Conditional: After another task */}
-            {trigger === 'after_task' && (
+            <div className="grid grid-cols-2 gap-2 font-mono">
               <div className="space-y-1">
-                <label className="text-[11px] text-slate-400">Select Preceding Task</label>
+                <label className="text-[#888888]">Trigger</label>
                 <select
-                  value={afterTaskId}
-                  onChange={(e) => setAfterTaskId(e.target.value)}
-                  className="w-full p-2 rounded-xl bg-slate-950 border border-white/10 text-white text-xs"
+                  value={trigger}
+                  onChange={(e) => setTrigger(e.target.value as TaskTrigger)}
+                  className="w-full p-2 rounded-xl bg-black border border-[#282828] text-white focus:outline-none"
                 >
-                  <option value="">-- Choose task dependency --</option>
-                  {tasks.map(t => (
-                    <option key={t.id} value={t.id}>{t.name}</option>
-                  ))}
+                  <option value="next_startup">Next Startup</option>
+                  <option value="today">Today</option>
+                  <option value="tomorrow">Tomorrow</option>
+                  <option value="specific_datetime">Scheduled Date/Time</option>
+                  <option value="after_task">After Another Task</option>
+                  <option value="manual">Manual Execution</option>
                 </select>
               </div>
-            )}
 
-            {/* Priority & Estimated Duration */}
-            <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-300">Priority</label>
+                <label className="text-[#888888]">Priority</label>
                 <select
                   value={priority}
                   onChange={(e) => setPriority(e.target.value as Priority)}
-                  className="w-full p-2.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs"
+                  className="w-full p-2 rounded-xl bg-black border border-[#282828] text-white focus:outline-none"
                 >
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
@@ -347,84 +279,27 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ isOpen, onClos
                   <option value="critical">Critical</option>
                 </select>
               </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-300">Est. Duration (mins)</label>
-                <input
-                  type="number"
-                  min="5"
-                  max="300"
-                  value={estimatedDuration}
-                  onChange={(e) => setEstimatedDuration(Number(e.target.value))}
-                  className="w-full p-2.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs"
-                />
-              </div>
             </div>
 
-            {/* Requires Confirmation Toggle */}
-            <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-950/60 border border-white/5">
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-amber-400" />
-                <div>
-                  <span className="text-xs font-semibold text-white block">Requires Confirmation</span>
-                  <span className="text-[10px] text-slate-400">Ask permission on phone before running</span>
-                </div>
+            <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#111111] border border-[#222222]">
+              <div className="font-mono">
+                <span className="text-white block font-medium">Require Remote Auth</span>
+                <span className="text-[10px] text-[#666666]">Prompt phone before laptop runs shell</span>
               </div>
               <input
                 type="checkbox"
                 checked={requiresConfirmation}
                 onChange={(e) => setRequiresConfirmation(e.target.checked)}
-                className="w-4 h-4 accent-purple-500 rounded cursor-pointer"
+                className="w-4 h-4 accent-white cursor-pointer"
               />
             </div>
 
-            {/* Tags Input */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-300">Tags</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleAddTag();
-                    }
-                  }}
-                  placeholder="Type tag and press Add..."
-                  className="flex-1 p-2 rounded-xl bg-slate-950 border border-white/10 text-white text-xs"
-                />
-                <button
-                  type="button"
-                  onClick={handleAddTag}
-                  className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white"
-                >
-                  Add
-                </button>
-              </div>
-
-              {/* Tag Chips */}
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                {tags.map(t => (
-                  <span
-                    key={t}
-                    onClick={() => handleRemoveTag(t)}
-                    className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-purple-950/60 border border-purple-500/30 text-[11px] text-purple-300 cursor-pointer hover:bg-red-950/50 hover:border-red-500/30 hover:text-red-300 transition-colors"
-                  >
-                    <span>#{t}</span>
-                    <X className="w-2.5 h-2.5" />
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Submit Button */}
+            {/* Submit */}
             <button
               type="submit"
-              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-emerald-600 hover:opacity-90 active:scale-95 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-glow-sm mt-2"
+              className="w-full py-2.5 rounded-xl vercel-btn-primary text-xs font-semibold flex items-center justify-center gap-2 mt-2"
             >
-              <Plus className="w-4 h-4 stroke-[3]" />
+              <Plus className="w-3.5 h-3.5 stroke-[3]" />
               <span>Create Task</span>
             </button>
           </form>

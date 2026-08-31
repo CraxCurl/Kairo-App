@@ -1,12 +1,11 @@
 import React from 'react';
 import { 
-  Sparkles, 
   Play, 
   Pause, 
-  AlertCircle, 
-  BrainCircuit, 
-  Clock,
-  ArrowRight
+  Sparkles, 
+  Activity,
+  Terminal,
+  ShieldAlert
 } from 'lucide-react';
 import { useKairo } from '../../context/KairoContext';
 
@@ -16,52 +15,50 @@ export const KairoStatusCard: React.FC = () => {
     currentTask, 
     pauseKairo, 
     resumeKairo, 
-    confirmationQueue, 
-    triggerMockConfirmation,
-    laptop
+    triggerMockConfirmation
   } = useKairo();
 
   const getStatusConfig = () => {
     switch (kairoStatus) {
       case 'executing':
         return {
-          title: 'Executing Task',
-          desc: currentTask ? `Actively running: "${currentTask.name}"` : 'Processing queued workflows...',
+          title: 'Agent Pipeline Running',
+          desc: currentTask ? `Active task: ${currentTask.name}` : 'Processing queued workflows...',
           badge: 'Executing',
-          badgeColor: 'bg-purple-500/20 border-purple-500/40 text-purple-300',
-          orbClass: 'from-purple-600 via-indigo-600 to-pink-500 shadow-glow-md animate-pulse-subtle'
+          badgeColor: 'bg-[#002B1B] border-[#00E599]/40 text-[#00E599]',
+          dotColor: 'bg-[#00E599]'
         };
       case 'waiting_confirmation':
         return {
-          title: 'Waiting for Confirmation',
-          desc: 'Kairo requires your permission before executing a command.',
-          badge: 'Auth Needed',
-          badgeColor: 'bg-amber-500/20 border-amber-500/40 text-amber-300',
-          orbClass: 'from-amber-500 via-orange-600 to-yellow-400 shadow-glow-warning animate-bounce'
+          title: 'Awaiting Authorization',
+          desc: 'Kairo requires explicit remote confirmation to proceed.',
+          badge: 'Auth Required',
+          badgeColor: 'bg-[#1F1500] border-[#F5A623]/40 text-[#F5A623]',
+          dotColor: 'bg-[#F5A623]'
         };
       case 'paused':
         return {
-          title: 'Kairo Paused',
-          desc: 'Execution on hold. Click resume to continue your laptop workflow.',
+          title: 'Pipeline Paused',
+          desc: 'Execution on hold. Click resume to continue workflow.',
           badge: 'Paused',
-          badgeColor: 'bg-pink-500/20 border-pink-500/40 text-pink-300',
-          orbClass: 'from-pink-600 via-rose-600 to-purple-600 opacity-80'
+          badgeColor: 'bg-[#2B0E1E] border-[#FF0080]/40 text-[#FF0080]',
+          dotColor: 'bg-[#FF0080]'
         };
       case 'thinking':
         return {
-          title: 'Synthesizing Plan',
-          desc: 'LLM agent is reasoning and planning next execution steps...',
-          badge: 'Thinking',
-          badgeColor: 'bg-indigo-500/20 border-indigo-500/40 text-indigo-300',
-          orbClass: 'from-indigo-500 via-cyan-500 to-purple-500 animate-spin-slow'
+          title: 'LLM Synthesizing Plan',
+          desc: 'Local agent reasoning and constructing step pipeline...',
+          badge: 'Synthesizing',
+          badgeColor: 'bg-[#1A0A2E] border-[#7928CA]/40 text-[#A78BFA]',
+          dotColor: 'bg-[#7928CA]'
         };
       default:
         return {
-          title: 'Kairo Idle',
+          title: 'Agent Idle',
           desc: 'Standing by for new commands or next laptop startup trigger.',
           badge: 'Idle',
-          badgeColor: 'bg-blue-500/20 border-blue-500/40 text-blue-300',
-          orbClass: 'from-blue-600 via-indigo-600 to-slate-700'
+          badgeColor: 'bg-[#141414] border-[#2A2A2A] text-[#888888]',
+          dotColor: 'bg-[#888888]'
         };
     }
   };
@@ -69,61 +66,56 @@ export const KairoStatusCard: React.FC = () => {
   const config = getStatusConfig();
 
   return (
-    <div className="w-full p-4 rounded-3xl bg-gradient-to-br from-[#121320] via-[#10111D] to-[#0D0E18] border border-purple-500/20 shadow-glow-sm relative overflow-hidden backdrop-blur-xl">
-      <div className="flex items-start justify-between gap-3">
-        {/* Left: Orb and Info */}
-        <div className="flex items-center gap-3.5">
-          {/* Animated AI Orb */}
-          <div className="relative flex items-center justify-center">
-            <div className={`w-12 h-12 rounded-full bg-gradient-to-tr ${config.orbClass} p-0.5 flex items-center justify-center`}>
-              <div className="w-full h-full rounded-full bg-[#0E0F1A] flex items-center justify-center overflow-hidden relative">
-                <div className="absolute inset-0 bg-white/10 animate-pulse" />
-                <Sparkles className="w-5 h-5 text-white animate-spin-slow" />
-              </div>
-            </div>
-            {/* Wave ring */}
-            <div className="absolute inset-0 rounded-full border border-purple-500/30 scale-125 animate-ping opacity-40 pointer-events-none" />
+    <div className="w-full p-4 rounded-2xl bg-[#0A0A0A] border border-[#222222] hover:border-[#333333] transition-all shadow-vercel-sm">
+      <div className="flex items-center justify-between gap-3">
+        {/* Left: Indicator & Status */}
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-xl bg-[#111111] border border-[#262626] flex items-center justify-center relative">
+            <svg viewBox="0 0 100 85" className="w-3.5 h-3.5 fill-white">
+              <polygon points="50,0 100,85 0,85" />
+            </svg>
+            <span className={`absolute -top-1 -right-1 w-2 h-2 rounded-full ${config.dotColor} ${kairoStatus === 'executing' ? 'animate-pulse' : ''}`} />
           </div>
 
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-bold text-sm text-white tracking-wide">
+              <h3 className="font-semibold text-xs text-white font-sans">
                 {config.title}
-              </span>
-              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${config.badgeColor}`}>
+              </h3>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-medium border ${config.badgeColor}`}>
                 {config.badge}
               </span>
             </div>
-            <p className="text-xs text-slate-400 line-clamp-1 mt-0.5">
+            <p className="text-[11px] text-[#888888] line-clamp-1 mt-0.5 font-sans">
               {config.desc}
             </p>
           </div>
         </div>
 
-        {/* Right: Quick Action toggle */}
+        {/* Right: Actions */}
         <div>
           {kairoStatus === 'executing' ? (
             <button
               onClick={pauseKairo}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-pink-950/40 hover:bg-pink-900/50 border border-pink-500/30 text-pink-300 text-xs font-semibold transition-all active:scale-95 shadow-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#141414] hover:bg-[#1C1C1C] border border-[#282828] text-white text-xs font-mono font-medium transition-all active:scale-95"
             >
-              <Pause className="w-3.5 h-3.5" />
-              <span>Pause</span>
+              <Pause className="w-3 h-3" />
+              <span>pause</span>
             </button>
           ) : kairoStatus === 'paused' ? (
             <button
               onClick={resumeKairo}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-emerald-950/40 hover:bg-emerald-900/50 border border-emerald-500/30 text-emerald-300 text-xs font-semibold transition-all active:scale-95 shadow-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-[#EAEAEA] text-black text-xs font-mono font-semibold transition-all active:scale-95 shadow-sm"
             >
-              <Play className="w-3.5 h-3.5" />
-              <span>Resume</span>
+              <Play className="w-3 h-3 fill-current" />
+              <span>resume</span>
             </button>
           ) : (
             <button
               onClick={triggerMockConfirmation}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-2xl bg-purple-950/40 hover:bg-purple-900/50 border border-purple-500/30 text-purple-300 text-xs font-semibold transition-all"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#141414] hover:bg-[#1C1C1C] border border-[#282828] text-[#A1A1A1] hover:text-white text-xs font-mono transition-all"
             >
-              <span>Test Auth</span>
+              <span>auth_test</span>
             </button>
           )}
         </div>

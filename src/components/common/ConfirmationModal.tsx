@@ -5,9 +5,7 @@ import {
   Check, 
   X, 
   Copy, 
-  Clock, 
-  AlertTriangle,
-  Laptop
+  Clock
 } from 'lucide-react';
 import { useKairo } from '../../context/KairoContext';
 
@@ -24,7 +22,6 @@ export const ConfirmationModal: React.FC = () => {
       setTimeLeft(prev => {
         if (prev <= 1) {
           clearInterval(timer);
-          // Auto deny on timeout for security
           respondToConfirmation(currentReq.id, false);
           return 0;
         }
@@ -43,100 +40,82 @@ export const ConfirmationModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-in fade-in duration-200">
-      <div className="w-full max-w-md bg-[#121322] border-2 border-amber-500/50 rounded-3xl p-5 shadow-[0_0_50px_rgba(245,158,11,0.25)] relative overflow-hidden flex flex-col gap-4 animate-in zoom-in-95 duration-200">
-        {/* Glow ambient highlight */}
-        <div className="absolute -top-20 -right-20 w-40 h-40 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
-
-        {/* Modal Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-white/10">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
-              <ShieldAlert className="w-5 h-5 animate-pulse" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-150 font-sans">
+      <div className="w-full max-w-md bg-[#0A0A0A] border border-[#282828] rounded-2xl p-5 shadow-vercel-lg relative overflow-hidden flex flex-col gap-3.5">
+        
+        {/* Header */}
+        <div className="flex items-center justify-between pb-3 border-b border-[#1A1A1A]">
+          <div className="flex items-center gap-2 font-mono">
+            <div className="w-7 h-7 rounded-lg bg-[#1F1500] border border-[#F5A623]/40 flex items-center justify-center text-[#F5A623]">
+              <ShieldAlert className="w-3.5 h-3.5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h3 className="font-bold text-sm text-white tracking-wide">
-                  Execution Auth Request
-                </h3>
-                <span className="px-2 py-0.5 rounded-full bg-amber-950/80 border border-amber-500/40 text-[10px] font-bold text-amber-300 uppercase tracking-wider">
-                  {currentReq.riskLevel} Risk
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-400">
-                Kairo is paused waiting for your approval
-              </p>
+              <h3 className="font-bold text-xs text-white uppercase tracking-wider">
+                Remote Auth Request
+              </h3>
             </div>
           </div>
 
-          {/* Countdown timer */}
-          <div className="flex items-center gap-1 text-xs font-mono text-amber-300/90 bg-amber-950/40 px-2 py-1 rounded-lg border border-amber-500/20">
-            <Clock className="w-3 h-3 text-amber-400" />
-            <span>{timeLeft}s</span>
+          <div className="flex items-center gap-1 text-[11px] font-mono text-[#F5A623] bg-[#1F1500] px-2 py-0.5 rounded-md border border-[#F5A623]/30">
+            <Clock className="w-3 h-3" />
+            <span>{timeLeft}s auto-deny</span>
           </div>
         </div>
 
-        {/* Request Prompt */}
-        <div className="space-y-2">
-          <span className="text-xs uppercase tracking-wider font-semibold text-slate-400">
+        {/* Prompt */}
+        <div className="space-y-1.5 font-mono text-xs">
+          <span className="text-[10px] text-[#666666] uppercase">
             Kairo wants to execute on {laptop.deviceName}:
           </span>
-          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-purple-500/10 to-transparent border border-amber-500/30">
-            <p className="text-sm font-semibold text-white leading-snug">
+          <div className="p-3 rounded-xl bg-[#111111] border border-[#222222] space-y-1">
+            <p className="text-xs font-semibold text-white font-sans leading-snug">
               &ldquo;{currentReq.action}&rdquo;
             </p>
-            <div className="mt-2 flex items-center gap-2 text-[11px] text-slate-400">
-              <span className="text-slate-500">Related Task:</span>
-              <span className="text-purple-300 font-medium">{currentReq.taskName}</span>
+            <div className="text-[10px] text-[#888888]">
+              target_task: <span className="text-white">{currentReq.taskName}</span>
             </div>
           </div>
         </div>
 
         {/* Command code preview */}
         {currentReq.commandToExecute && (
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between text-[11px] text-slate-400">
+          <div className="space-y-1 font-mono text-xs">
+            <div className="flex items-center justify-between text-[10px] text-[#666666]">
               <div className="flex items-center gap-1">
-                <Terminal className="w-3 h-3 text-slate-400" />
-                <span>Laptop Shell Payload:</span>
+                <Terminal className="w-3 h-3" />
+                <span>Shell Payload:</span>
               </div>
               <button 
                 onClick={handleCopy}
-                className="flex items-center gap-1 hover:text-white transition-colors"
+                className="hover:text-white transition-colors flex items-center gap-1"
               >
-                {copied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                <span className="text-[10px]">{copied ? 'Copied' : 'Copy'}</span>
+                {copied ? <Check className="w-2.5 h-2.5 text-[#00E599]" /> : <Copy className="w-2.5 h-2.5" />}
+                <span>{copied ? 'copied' : 'copy'}</span>
               </button>
             </div>
-            <div className="p-2.5 rounded-xl bg-black/60 border border-white/5 font-mono text-[11px] text-emerald-300/90 overflow-x-auto select-all">
+            <div className="p-2.5 rounded-xl bg-black border border-[#222222] text-[11px] text-[#00E599] overflow-x-auto select-all">
               <code>$ {currentReq.commandToExecute}</code>
             </div>
           </div>
         )}
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-3 pt-2">
+        <div className="grid grid-cols-2 gap-2 pt-1 font-mono text-xs">
           <button
             onClick={() => respondToConfirmation(currentReq.id, false)}
-            className="flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-slate-800/80 hover:bg-slate-700/80 active:bg-slate-900 border border-white/10 text-slate-300 font-semibold text-sm transition-all active:scale-95 shadow-sm"
+            className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl vercel-btn-secondary text-[#EDEDED] font-medium"
           >
-            <X className="w-4 h-4 text-red-400" />
-            <span>Deny</span>
+            <X className="w-3.5 h-3.5 text-[#FF4444]" />
+            <span>Deny Action</span>
           </button>
 
           <button
             onClick={() => respondToConfirmation(currentReq.id, true)}
-            className="flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-emerald-600 hover:opacity-90 active:opacity-100 text-white font-bold text-sm transition-all active:scale-95 shadow-[0_0_25px_rgba(124,110,248,0.4)]"
+            className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl vercel-btn-primary font-semibold"
           >
-            <Check className="w-4 h-4 text-emerald-200 stroke-[3]" />
-            <span>Allow</span>
+            <Check className="w-3.5 h-3.5 text-black stroke-[3]" />
+            <span>Authorize [Allow]</span>
           </button>
-        </div>
-
-        {/* Security footnote */}
-        <div className="text-center pt-1 text-[10px] text-slate-500">
-          Encrypted token validation &bull; Remote laptop execution policy active
         </div>
       </div>
     </div>

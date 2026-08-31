@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Plus, Mic, ArrowRight } from 'lucide-react';
+import { ArrowRight, Terminal } from 'lucide-react';
 import { LaptopStatusCard } from './LaptopStatusCard';
 import { KairoStatusCard } from './KairoStatusCard';
 import { CurrentTaskCard } from './CurrentTaskCard';
@@ -18,42 +18,43 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
   onOpenCreateTask 
 }) => {
   return (
-    <div className="w-full space-y-4 pb-28 pt-1">
-      {/* Quick AI Task Creator Prompt Bar */}
+    <div className="w-full space-y-3 pb-28 pt-1">
+      {/* Vercel Command-K Style AI Task Creator Bar */}
       <div 
         onClick={onOpenCreateTask}
-        className="w-full p-3 rounded-2xl bg-gradient-to-r from-purple-900/30 via-indigo-900/20 to-[#121322] border border-purple-500/30 shadow-glow-sm flex items-center justify-between gap-3 cursor-pointer hover:border-purple-500/50 transition-all group"
+        className="w-full p-3 rounded-2xl bg-[#0A0A0A] border border-[#262626] hover:border-[#444444] shadow-vercel-sm flex items-center justify-between gap-3 cursor-pointer transition-all group"
       >
         <div className="flex items-center gap-2.5 overflow-hidden">
-          <div className="w-7 h-7 rounded-xl bg-purple-600/30 border border-purple-400/30 flex items-center justify-center text-purple-300 shrink-0">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="w-6 h-6 rounded-lg bg-[#141414] border border-[#2E2E2E] flex items-center justify-center text-white shrink-0 font-mono text-[10px]">
+            &gt;_
           </div>
-          <span className="text-xs text-slate-300 font-medium truncate group-hover:text-white transition-colors">
-            &ldquo;Tomorrow when I open laptop, remind me to...&rdquo;
+          <span className="text-xs text-[#888888] font-mono truncate group-hover:text-[#EDEDED] transition-colors">
+            Ask Kairo to queue, schedule, or code...
           </span>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
-          <span className="text-[10px] uppercase font-bold text-purple-400 tracking-wider">AI Create</span>
-          <ArrowRight className="w-3.5 h-3.5 text-purple-400 group-hover:translate-x-0.5 transition-transform" />
+          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#141414] border border-[#262626] text-[#666666]">
+            ⌘K
+          </span>
         </div>
       </div>
 
-      {/* Laptop Online Telemetry */}
+      {/* Laptop Telemetry */}
       <LaptopStatusCard />
 
-      {/* Kairo AI Agent Status */}
+      {/* Agent Pipeline State */}
       <KairoStatusCard />
 
-      {/* Current Task Hero */}
+      {/* Active Pipeline Card */}
       <CurrentTaskCard />
 
-      {/* Upcoming Task preview */}
+      {/* Upcoming In Queue */}
       <UpcomingTaskCard onGoToQueue={() => onSelectTab('queue')} />
 
-      {/* Today's Progress Stats */}
+      {/* Analytics & Throughput */}
       <ProgressWidget />
 
-      {/* Recent Timeline */}
+      {/* Recent Activity */}
       <RecentTimelineWidget onGoToHistory={() => onSelectTab('history')} />
     </div>
   );

@@ -5,7 +5,7 @@ import {
   Mic, 
   History, 
   Settings2,
-  Plus
+  Terminal
 } from 'lucide-react';
 import { useKairo } from '../../context/KairoContext';
 
@@ -19,50 +19,44 @@ interface BottomNavProps {
 
 export const BottomNav: React.FC<BottomNavProps> = ({ 
   currentTab, 
-  onSelectTab, 
-  onOpenCreateTask 
+  onSelectTab 
 }) => {
-  const { tasks, kairoStatus } = useKairo();
+  const { tasks } = useKairo();
   const queueCount = tasks.filter(t => t.status === 'waiting' || t.status === 'in_progress').length;
 
   const navItems = [
-    { id: 'dashboard' as TabType, label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'dashboard' as TabType, label: 'Overview', icon: LayoutDashboard },
     { id: 'queue' as TabType, label: 'Queue', icon: ListOrdered, badge: queueCount },
-    { id: 'voice' as TabType, label: 'Voice AI', icon: Mic, isSpecialVoice: true },
-    { id: 'history' as TabType, label: 'Timeline', icon: History },
+    { id: 'voice' as TabType, label: 'Voice AI', icon: Mic, isVoice: true },
+    { id: 'history' as TabType, label: 'Logs', icon: History },
     { id: 'settings' as TabType, label: 'Settings', icon: Settings2 },
   ];
 
   return (
-    <div className="w-full fixed bottom-0 left-0 right-0 z-30 px-3 pb-4 pt-2 pointer-events-none flex justify-center max-w-lg mx-auto">
-      <div className="w-full bg-[#11121C]/90 backdrop-blur-2xl border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.6)] rounded-3xl p-1.5 flex items-center justify-around pointer-events-auto relative">
+    <div className="w-full fixed bottom-0 left-0 right-0 z-30 px-4 pb-4 pt-2 pointer-events-none flex justify-center max-w-lg mx-auto">
+      <div className="w-full bg-[#0A0A0A]/95 backdrop-blur-2xl border border-[#242424] shadow-[0_15px_40px_rgba(0,0,0,0.9)] rounded-2xl p-1 flex items-center justify-around pointer-events-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentTab === item.id;
 
-          if (item.isSpecialVoice) {
+          if (item.isVoice) {
             return (
               <button
                 key={item.id}
                 onClick={() => onSelectTab('voice')}
-                className="relative -top-4 group flex flex-col items-center focus:outline-none"
+                className="relative -top-3 group flex flex-col items-center focus:outline-none"
               >
-                <div className={`w-14 h-14 rounded-full p-[2px] transition-transform duration-300 group-hover:scale-105 active:scale-95 ${
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-200 ${
                   isActive 
-                    ? 'bg-gradient-to-tr from-purple-600 via-indigo-500 to-pink-500 shadow-glow-md' 
-                    : 'bg-gradient-to-tr from-purple-900 to-indigo-800 shadow-lg'
+                    ? 'bg-white text-black shadow-vercel-glow scale-105' 
+                    : 'bg-[#141414] text-[#EDEDED] border border-[#2E2E2E] hover:border-white/40'
                 }`}>
-                  <div className="w-full h-full rounded-full bg-[#0E0F1A] flex items-center justify-center relative overflow-hidden">
-                    <div className="absolute inset-0 bg-purple-500/20 group-hover:bg-purple-500/30 transition-colors" />
-                    <Mic className={`w-6 h-6 transition-colors ${
-                      isActive ? 'text-purple-300 animate-pulse' : 'text-slate-300'
-                    }`} />
-                  </div>
+                  <Mic className={`w-5 h-5 ${isActive ? 'text-black' : 'text-white'}`} />
                 </div>
-                <span className={`text-[10px] font-semibold mt-0.5 tracking-tight transition-colors ${
-                  isActive ? 'text-purple-300' : 'text-slate-400'
+                <span className={`text-[10px] font-mono mt-0.5 transition-colors ${
+                  isActive ? 'text-white font-bold' : 'text-[#666666]'
                 }`}>
-                  Voice
+                  voice
                 </span>
               </button>
             );
@@ -72,30 +66,27 @@ export const BottomNav: React.FC<BottomNavProps> = ({
             <button
               key={item.id}
               onClick={() => onSelectTab(item.id)}
-              className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-2xl transition-all duration-200 relative group active:scale-95 ${
+              className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-150 relative active:scale-95 ${
                 isActive 
-                  ? 'text-purple-300 bg-purple-500/10' 
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'text-white bg-[#141414]' 
+                  : 'text-[#666666] hover:text-[#A1A1A1]'
               }`}
             >
               <div className="relative">
-                <Icon className={`w-5 h-5 transition-transform duration-200 ${
-                  isActive ? 'scale-110 text-purple-400' : 'group-hover:scale-105'
+                <Icon className={`w-4 h-4 transition-transform ${
+                  isActive ? 'scale-105 text-white' : ''
                 }`} />
                 {item.badge !== undefined && item.badge > 0 && (
-                  <span className="absolute -top-1 -right-2 px-1 min-w-[14px] h-[14px] rounded-full bg-purple-600 text-white text-[9px] font-bold flex items-center justify-center">
+                  <span className="absolute -top-1 -right-2 px-1 min-w-[13px] h-[13px] rounded-full bg-white text-black font-mono text-[8px] font-bold flex items-center justify-center">
                     {item.badge}
                   </span>
                 )}
               </div>
-              <span className={`text-[10px] font-medium mt-1 tracking-tight ${
-                isActive ? 'text-purple-300 font-semibold' : 'text-slate-400'
+              <span className={`text-[10px] font-mono mt-1 ${
+                isActive ? 'text-white font-medium' : 'text-[#666666]'
               }`}>
-                {item.label}
+                {item.label.toLowerCase()}
               </span>
-              {isActive && (
-                <div className="w-1 h-1 rounded-full bg-purple-400 mt-0.5 shadow-glow-sm" />
-              )}
             </button>
           );
         })}

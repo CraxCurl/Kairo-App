@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, ArrowUpRight, Play, Tag, Calendar } from 'lucide-react';
+import { ArrowUpRight, Play, Calendar } from 'lucide-react';
 import { useKairo } from '../../context/KairoContext';
 
 interface UpcomingTaskCardProps {
@@ -13,49 +13,46 @@ export const UpcomingTaskCard: React.FC<UpcomingTaskCardProps> = ({ onGoToQueue 
 
   const formatTrigger = (trigger: string) => {
     switch (trigger) {
-      case 'next_startup': return 'Next Laptop Startup';
-      case 'today': return 'Today';
-      case 'tomorrow': return 'Tomorrow';
-      case 'after_task': return 'After Current Task';
-      default: return 'Scheduled';
+      case 'next_startup': return 'next_boot';
+      case 'today': return 'today';
+      case 'tomorrow': return 'tomorrow';
+      case 'after_task': return 'dependency';
+      default: return 'scheduled';
     }
   };
 
   return (
-    <div className="w-full p-4 rounded-3xl bg-[#11121C]/80 border border-white/[0.08] shadow-md backdrop-blur-xl space-y-2.5">
+    <div className="w-full p-4 rounded-2xl bg-[#0A0A0A] border border-[#222222] hover:border-[#333333] transition-all space-y-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-            Up Next In Queue
+          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#666666]">
+            next_in_queue
           </span>
-          <span className="px-2 py-0.5 rounded-full bg-purple-950/60 border border-purple-500/30 text-[10px] font-semibold text-purple-300">
-            #2 in line
+          <span className="px-1.5 py-0.5 rounded bg-[#141414] border border-[#242424] text-[9px] font-mono text-[#888888]">
+            pos: 02
           </span>
         </div>
 
         <button 
           onClick={onGoToQueue}
-          className="text-xs text-purple-400 hover:text-purple-300 font-medium flex items-center gap-0.5 group"
+          className="text-xs text-[#888888] hover:text-white font-mono flex items-center gap-1 group transition-colors"
         >
-          <span>View Queue</span>
-          <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+          <span>view queue</span>
+          <ArrowUpRight className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
         </button>
       </div>
 
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-1 flex-1">
-          <h3 className="text-sm font-bold text-white leading-snug">
+          <h3 className="text-xs font-semibold text-white leading-snug font-sans">
             {upcomingTask.name}
           </h3>
-          <div className="flex items-center gap-2 text-xs text-slate-400">
-            <span className="flex items-center gap-1 text-slate-300 font-medium">
-              <Calendar className="w-3 h-3 text-purple-400" />
-              <span>{formatTrigger(upcomingTask.trigger)}</span>
-            </span>
+          <div className="flex items-center gap-2 text-[10px] text-[#666666] font-mono">
+            <span>trigger: {formatTrigger(upcomingTask.trigger)}</span>
             {upcomingTask.estimatedDuration && (
               <>
                 <span>&bull;</span>
-                <span className="text-slate-400">~{upcomingTask.estimatedDuration} mins</span>
+                <span>~{upcomingTask.estimatedDuration}m</span>
               </>
             )}
           </div>
@@ -64,10 +61,10 @@ export const UpcomingTaskCard: React.FC<UpcomingTaskCardProps> = ({ onGoToQueue 
         {/* Quick Start Button */}
         <button
           onClick={() => startTask(upcomingTask.id)}
-          className="flex items-center gap-1 py-1.5 px-3 rounded-2xl bg-purple-950/60 hover:bg-purple-900/60 border border-purple-500/40 text-purple-200 text-xs font-semibold transition-all active:scale-95 shadow-sm"
+          className="flex items-center gap-1 py-1.5 px-2.5 rounded-xl bg-[#141414] hover:bg-[#1C1C1C] border border-[#282828] text-white text-xs font-mono transition-all active:scale-95"
         >
-          <Play className="w-3 h-3 fill-current" />
-          <span>Start Now</span>
+          <Play className="w-2.5 h-2.5 fill-current" />
+          <span>start</span>
         </button>
       </div>
     </div>

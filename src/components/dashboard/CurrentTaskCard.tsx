@@ -4,16 +4,15 @@ import {
   Pause, 
   SkipForward, 
   CheckCircle, 
-  XCircle, 
   ChevronDown, 
   ChevronUp, 
   Terminal, 
   Check, 
   Loader2, 
-  Tag, 
   Clock, 
   ShieldCheck,
-  AlertCircle
+  GitCommit,
+  ArrowRight
 } from 'lucide-react';
 import { useKairo } from '../../context/KairoContext';
 
@@ -25,7 +24,6 @@ export const CurrentTaskCard: React.FC = () => {
     resumeKairo, 
     skipCurrentTask, 
     completeCurrentTask, 
-    cancelTask,
     startTask
   } = useKairo();
 
@@ -34,13 +32,13 @@ export const CurrentTaskCard: React.FC = () => {
 
   if (!currentTask) {
     return (
-      <div className="w-full p-5 rounded-3xl bg-[#11121C]/80 border border-white/[0.08] text-center space-y-2">
-        <div className="w-10 h-10 rounded-2xl bg-slate-900 mx-auto flex items-center justify-center text-slate-500">
-          <Clock className="w-5 h-5" />
+      <div className="w-full p-6 rounded-2xl bg-[#0A0A0A] border border-[#222222] text-center space-y-2">
+        <div className="w-8 h-8 rounded-xl bg-[#111111] mx-auto flex items-center justify-center text-[#666666]">
+          <Clock className="w-4 h-4" />
         </div>
-        <h3 className="text-sm font-bold text-slate-300">No Task In Progress</h3>
-        <p className="text-xs text-slate-500 max-w-xs mx-auto">
-          Your laptop queue is clear. Create a task using voice or natural language.
+        <h3 className="text-xs font-semibold text-white font-sans">No Active Pipeline</h3>
+        <p className="text-[11px] text-[#666666] font-mono">
+          Task queue is empty. Dispatch a command via AI prompt or voice.
         </p>
       </div>
     );
@@ -50,102 +48,98 @@ export const CurrentTaskCard: React.FC = () => {
   const isInProgress = currentTask.status === 'in_progress';
 
   return (
-    <div className="w-full p-4 sm:p-5 rounded-3xl bg-gradient-to-b from-[#131422] to-[#0E0F1A] border border-purple-500/25 shadow-glow-sm relative overflow-hidden backdrop-blur-xl">
-      {/* Glow highlight */}
-      <div className="absolute top-0 right-0 w-48 h-48 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
-
+    <div className="w-full p-4 sm:p-5 rounded-2xl bg-[#0A0A0A] border border-[#262626] hover:border-[#383838] transition-all shadow-vercel-sm relative overflow-hidden">
       {/* Top Meta Bar */}
-      <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-white/[0.06]">
+      <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#1A1A1A]">
         <div className="flex items-center gap-2">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-purple-400">
-            Active Task
+          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#888888]">
+            active_task
           </span>
-          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-            currentTask.priority === 'critical' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
-            currentTask.priority === 'high' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' :
-            'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+          <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-medium ${
+            currentTask.priority === 'critical' ? 'bg-[#330000] text-[#FF4444] border border-[#FF0000]/30' :
+            currentTask.priority === 'high' ? 'bg-[#1F1500] text-[#F5A623] border border-[#F5A623]/30' :
+            'bg-[#111111] text-[#A1A1A1] border border-[#262626]'
           }`}>
-            {currentTask.priority}
+            p:{currentTask.priority}
           </span>
           {currentTask.requiresConfirmation && (
-            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-800 text-[10px] text-slate-300 border border-white/5">
-              <ShieldCheck className="w-3 h-3 text-amber-400" />
-              <span>Auth Protected</span>
+            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#111111] text-[10px] font-mono text-[#F5A623] border border-[#262626]">
+              <ShieldCheck className="w-3 h-3 text-[#F5A623]" />
+              <span>auth_guard</span>
             </span>
           )}
         </div>
 
-        {/* Status Chip */}
-        <div className="flex items-center gap-1.5 text-xs">
+        {/* State Indicator */}
+        <div className="flex items-center gap-1.5 text-xs font-mono">
           {isInProgress && !isPaused && (
-            <span className="flex items-center gap-1 text-purple-300 font-medium">
-              <Loader2 className="w-3.5 h-3.5 animate-spin text-purple-400" />
-              <span>In Progress</span>
+            <span className="flex items-center gap-1 text-[#00E599]">
+              <Loader2 className="w-3 h-3 animate-spin" />
+              <span>building ({currentTask.progress}%)</span>
             </span>
           )}
           {isPaused && (
-            <span className="flex items-center gap-1 text-pink-300 font-medium">
-              <Pause className="w-3.5 h-3.5 text-pink-400" />
-              <span>Paused</span>
+            <span className="flex items-center gap-1 text-[#FF0080]">
+              <Pause className="w-3 h-3" />
+              <span>paused</span>
             </span>
           )}
           {currentTask.status === 'waiting' && (
-            <span className="text-slate-400 font-medium">Waiting to start</span>
+            <span className="text-[#666666]">queued</span>
           )}
         </div>
       </div>
 
       {/* Main Task Title & Description */}
-      <div className="pt-3 pb-2 space-y-1.5">
-        <h2 className="text-base sm:text-lg font-bold text-white tracking-tight leading-snug">
-          &ldquo;{currentTask.name}&rdquo;
+      <div className="pt-3 pb-2 space-y-1">
+        <h2 className="text-sm sm:text-base font-bold text-white tracking-tight leading-snug font-sans">
+          {currentTask.name}
         </h2>
         {currentTask.description && (
-          <p className="text-xs text-slate-400 leading-relaxed line-clamp-2">
+          <p className="text-xs text-[#888888] leading-relaxed line-clamp-2 font-sans">
             {currentTask.description}
           </p>
         )}
       </div>
 
       {/* Tags & Estimated Duration */}
-      <div className="flex flex-wrap items-center gap-2 py-1">
+      <div className="flex flex-wrap items-center gap-1.5 py-1">
         {currentTask.tags.map(tag => (
-          <span key={tag} className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-900/90 border border-white/5 text-[11px] text-slate-300">
-            <Tag className="w-2.5 h-2.5 text-purple-400" />
-            <span>{tag}</span>
+          <span key={tag} className="px-2 py-0.5 rounded-md bg-[#111111] border border-[#222222] font-mono text-[10px] text-[#A1A1A1]">
+            #{tag}
           </span>
         ))}
         {currentTask.estimatedDuration && (
-          <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-900/90 border border-white/5 text-[11px] text-slate-400">
-            <Clock className="w-2.5 h-2.5 text-slate-400" />
-            <span>~{currentTask.estimatedDuration} mins</span>
+          <span className="px-2 py-0.5 rounded-md bg-[#111111] border border-[#222222] font-mono text-[10px] text-[#666666] flex items-center gap-1">
+            <Clock className="w-2.5 h-2.5" />
+            <span>~{currentTask.estimatedDuration}m</span>
           </span>
         )}
       </div>
 
-      {/* Progress Bar & Percentage */}
+      {/* Progress Bar in Solid White / Vercel style */}
       <div className="py-2.5 space-y-1.5">
-        <div className="flex items-center justify-between text-xs font-semibold">
-          <span className="text-slate-400">Task Completion</span>
-          <span className="text-purple-300 font-mono">{currentTask.progress}%</span>
+        <div className="flex items-center justify-between text-xs font-mono">
+          <span className="text-[#666666]">Pipeline Execution</span>
+          <span className="text-white font-medium">{currentTask.progress}%</span>
         </div>
-        <div className="w-full h-2 rounded-full bg-slate-900 overflow-hidden p-0.5 border border-white/5">
+        <div className="w-full h-1.5 rounded-full bg-[#1A1A1A] overflow-hidden">
           <div 
-            className="h-full rounded-full bg-gradient-to-r from-purple-600 via-indigo-500 to-emerald-400 transition-all duration-700 shadow-[0_0_12px_rgba(124,110,248,0.5)]" 
+            className="h-full rounded-full bg-white transition-all duration-700" 
             style={{ width: `${currentTask.progress}%` }}
           />
         </div>
       </div>
 
-      {/* Step Checklist Drawer */}
+      {/* Execution Pipeline Steps */}
       {currentTask.steps && currentTask.steps.length > 0 && (
-        <div className="mt-1 border-t border-white/[0.06] pt-2">
+        <div className="mt-1 border-t border-[#1A1A1A] pt-2">
           <button 
             onClick={() => setShowSteps(!showSteps)}
-            className="w-full flex items-center justify-between py-1 text-xs text-slate-400 hover:text-slate-200 transition-colors"
+            className="w-full flex items-center justify-between py-1 text-xs text-[#888888] hover:text-white transition-colors font-mono"
           >
-            <span className="font-semibold text-slate-300">
-              Execution Plan ({currentTask.steps.filter(s => s.completed).length}/{currentTask.steps.length})
+            <span className="font-medium text-white">
+              Steps ({currentTask.steps.filter(s => s.completed).length}/{currentTask.steps.length})
             </span>
             {showSteps ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
           </button>
@@ -157,24 +151,24 @@ export const CurrentTaskCard: React.FC = () => {
                   key={step.id} 
                   className={`p-2 rounded-xl flex items-start gap-2.5 text-xs transition-all ${
                     step.completed 
-                      ? 'bg-emerald-950/20 text-slate-400 line-through' 
+                      ? 'bg-[#111111] text-[#666666] line-through' 
                       : step.current 
-                      ? 'bg-purple-950/30 border border-purple-500/30 text-white font-medium shadow-sm' 
-                      : 'bg-slate-900/40 text-slate-400'
+                      ? 'bg-[#141414] border border-[#333333] text-white font-medium' 
+                      : 'bg-[#0E0E0E] text-[#666666]'
                   }`}
                 >
                   <div className="mt-0.5">
                     {step.completed ? (
-                      <div className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                      <div className="w-3.5 h-3.5 rounded-full bg-[#00E599]/20 text-[#00E599] flex items-center justify-center">
                         <Check className="w-2.5 h-2.5 stroke-[3]" />
                       </div>
                     ) : step.current ? (
-                      <Loader2 className="w-4 h-4 text-purple-400 animate-spin" />
+                      <Loader2 className="w-3.5 h-3.5 text-white animate-spin" />
                     ) : (
-                      <div className="w-4 h-4 rounded-full border border-slate-700" />
+                      <div className="w-3.5 h-3.5 rounded-full border border-[#333333]" />
                     )}
                   </div>
-                  <span className="flex-1 leading-snug">{step.title}</span>
+                  <span className="flex-1 leading-snug font-mono text-[11px]">{step.title}</span>
                 </div>
               ))}
             </div>
@@ -182,21 +176,21 @@ export const CurrentTaskCard: React.FC = () => {
         </div>
       )}
 
-      {/* Realtime Terminal Logs Toggle */}
+      {/* Live Terminal Logs Toggle */}
       {currentTask.executionLogs && currentTask.executionLogs.length > 0 && (
         <div className="mt-2">
           <button 
             onClick={() => setShowLogs(!showLogs)}
-            className="flex items-center gap-1.5 text-[11px] text-purple-300 hover:text-purple-200 transition-colors py-1"
+            className="flex items-center gap-1.5 text-[11px] font-mono text-[#888888] hover:text-white transition-colors py-1"
           >
-            <Terminal className="w-3 h-3 text-purple-400" />
-            <span>{showLogs ? 'Hide Laptop Logs' : 'View Live Execution Logs'}</span>
+            <Terminal className="w-3 h-3" />
+            <span>{showLogs ? 'hide build logs' : 'view runtime logs'}</span>
           </button>
 
           {showLogs && (
-            <div className="mt-1.5 p-3 rounded-2xl bg-black/80 border border-white/10 font-mono text-[10px] text-slate-300 space-y-1 max-h-32 overflow-y-auto">
+            <div className="mt-1.5 p-3 rounded-xl bg-black border border-[#222222] font-mono text-[10px] text-[#A1A1A1] space-y-1 max-h-32 overflow-y-auto">
               {currentTask.executionLogs.map((log, i) => (
-                <div key={i} className="text-emerald-300/90 font-mono">
+                <div key={i} className="text-[#00E599]">
                   {log}
                 </div>
               ))}
@@ -205,31 +199,31 @@ export const CurrentTaskCard: React.FC = () => {
         </div>
       )}
 
-      {/* Remote Controls Action Bar */}
-      <div className="grid grid-cols-4 gap-2 pt-3 mt-3 border-t border-white/[0.06]">
+      {/* Action Bar (Vercel Style) */}
+      <div className="grid grid-cols-4 gap-2 pt-3 mt-3 border-t border-[#1A1A1A]">
         {/* Pause / Resume / Start */}
         {currentTask.status === 'waiting' ? (
           <button
             onClick={() => startTask(currentTask.id)}
-            className="col-span-2 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-2xl bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white font-bold text-xs transition-all active:scale-95 shadow-glow-sm"
+            className="col-span-2 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl vercel-btn-primary text-xs font-semibold"
           >
-            <Play className="w-3.5 h-3.5 fill-current" />
-            <span>Start Now</span>
+            <Play className="w-3 h-3 fill-current" />
+            <span>Deploy / Start</span>
           </button>
         ) : isPaused ? (
           <button
             onClick={resumeKairo}
-            className="col-span-2 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-xs transition-all active:scale-95 shadow-glow-success"
+            className="col-span-2 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl vercel-btn-primary text-xs font-semibold"
           >
-            <Play className="w-3.5 h-3.5 fill-current" />
+            <Play className="w-3 h-3 fill-current" />
             <span>Resume</span>
           </button>
         ) : (
           <button
             onClick={pauseKairo}
-            className="col-span-2 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-2xl bg-pink-950/60 hover:bg-pink-900/60 border border-pink-500/40 text-pink-200 font-bold text-xs transition-all active:scale-95"
+            className="col-span-2 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl vercel-btn-secondary text-xs font-medium"
           >
-            <Pause className="w-3.5 h-3.5" />
+            <Pause className="w-3 h-3" />
             <span>Pause</span>
           </button>
         )}
@@ -237,20 +231,18 @@ export const CurrentTaskCard: React.FC = () => {
         {/* Skip */}
         <button
           onClick={skipCurrentTask}
-          title="Skip current task and move to next"
-          className="flex items-center justify-center gap-1 py-2.5 px-2 rounded-2xl bg-slate-900/80 hover:bg-slate-800 border border-white/10 text-slate-300 font-semibold text-xs transition-all active:scale-95"
+          className="flex items-center justify-center gap-1 py-2 px-2 rounded-xl vercel-btn-secondary text-xs font-medium"
         >
-          <SkipForward className="w-3.5 h-3.5" />
+          <SkipForward className="w-3 h-3" />
           <span>Skip</span>
         </button>
 
         {/* Complete */}
         <button
           onClick={completeCurrentTask}
-          title="Mark task completed"
-          className="flex items-center justify-center gap-1 py-2.5 px-2 rounded-2xl bg-emerald-950/50 hover:bg-emerald-900/60 border border-emerald-500/30 text-emerald-300 font-semibold text-xs transition-all active:scale-95"
+          className="flex items-center justify-center gap-1 py-2 px-2 rounded-xl bg-white hover:bg-[#EAEAEA] text-black text-xs font-semibold rounded-xl"
         >
-          <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
+          <CheckCircle className="w-3 h-3 text-black" />
           <span>Done</span>
         </button>
       </div>

@@ -22,7 +22,7 @@ export const KairoAppContent: React.FC = () => {
   const [isNotificationDrawerOpen, setIsNotificationDrawerOpen] = useState(false);
 
   return (
-    <div className="w-full min-h-screen flex flex-col relative bg-[#090A0F]">
+    <div className="w-full min-h-screen flex flex-col relative bg-[#000000] text-[#EDEDED] font-sans">
       {/* Mobile Top Status Bar */}
       <StatusBar />
 
@@ -88,7 +88,7 @@ export const KairoAppContent: React.FC = () => {
       <NotificationDrawer
         isOpen={isNotificationDrawerOpen}
         onClose={() => setIsNotificationDrawerOpen(false)}
-        onNavigateToTask={(taskId) => {
+        onNavigateToTask={() => {
           setCurrentTab('queue');
         }}
       />

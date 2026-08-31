@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Wifi, Battery, BatteryCharging, ShieldCheck, Zap } from 'lucide-react';
+import { Wifi, Battery, BatteryCharging, Shield, Activity, Zap } from 'lucide-react';
 import { useKairo } from '../../context/KairoContext';
 
 export const StatusBar: React.FC = () => {
@@ -17,42 +17,34 @@ export const StatusBar: React.FC = () => {
   }, []);
 
   return (
-    <div className="w-full pt-3 pb-2 px-6 flex items-center justify-between text-xs text-slate-400 select-none border-b border-white/[0.04] bg-[#090A0F]/90 backdrop-blur-md sticky top-0 z-30">
-      {/* Time & Kairo Pill */}
+    <div className="w-full pt-3 pb-2 px-5 flex items-center justify-between text-xs text-[#888888] select-none border-b border-[#1A1A1A] bg-[#000000]/95 backdrop-blur-xl sticky top-0 z-30 font-mono">
+      {/* Time & Agent Moniker */}
       <div className="flex items-center gap-2">
-        <span className="font-semibold text-slate-200 tracking-tight font-mono">{time || '09:41'}</span>
-        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-purple-950/60 border border-purple-500/30 text-[10px] text-purple-300 font-medium">
+        <span className="font-semibold text-white tracking-tight">{time || '09:41'}</span>
+        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#111111] border border-[#262626] text-[10px] text-[#EDEDED]">
           <span className={`w-1.5 h-1.5 rounded-full ${
-            kairoStatus === 'executing' ? 'bg-purple-400 animate-ping' :
-            kairoStatus === 'waiting_confirmation' ? 'bg-amber-400 animate-bounce' :
-            kairoStatus === 'paused' ? 'bg-pink-400' :
-            kairoStatus === 'thinking' ? 'bg-indigo-400 animate-pulse' : 'bg-blue-400'
+            kairoStatus === 'executing' ? 'bg-[#0070F3] animate-ping' :
+            kairoStatus === 'waiting_confirmation' ? 'bg-[#F5A623] animate-bounce' :
+            kairoStatus === 'paused' ? 'bg-[#FF0080]' :
+            kairoStatus === 'thinking' ? 'bg-[#7928CA] animate-pulse' : 'bg-[#888888]'
           }`} />
-          <span>KAIRO</span>
+          <span className="font-sans font-semibold tracking-wider text-[9px] uppercase">KAIRO</span>
         </div>
       </div>
 
-      {/* Dynamic Island / Agent Status Pill */}
-      <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-900/90 border border-white/10 text-[11px] text-slate-300">
-        <ShieldCheck className="w-3 h-3 text-purple-400" />
-        <span className="text-slate-400 text-[10px]">Encrypted Tunnel</span>
-      </div>
-
-      {/* Connectivity & Battery */}
-      <div className="flex items-center gap-2 text-slate-300">
+      {/* Connectivity & Telemetry */}
+      <div className="flex items-center gap-3 text-[#A1A1A1]">
         <div className="flex items-center gap-1 text-[10px]">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-          <span className="text-slate-400 font-mono">5G</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-[#00E599]" />
+          <span>EDGE</span>
         </div>
-        <Wifi className="w-3.5 h-3.5 text-slate-300" />
+        <Wifi className="w-3.5 h-3.5 text-[#888888]" />
         <div className="flex items-center gap-1">
-          <span className="text-[10px] font-mono text-slate-400">{Math.round(laptop.batteryLevel)}%</span>
+          <span className="text-[10px]">{Math.round(laptop.batteryLevel)}%</span>
           {laptop.isCharging ? (
-            <div className="flex items-center text-emerald-400">
-              <Zap className="w-3 h-3 fill-emerald-400" />
-            </div>
+            <Zap className="w-3 h-3 text-[#00E599] fill-current" />
           ) : (
-            <Battery className="w-3.5 h-3.5 text-slate-300" />
+            <Battery className="w-3.5 h-3.5 text-[#888888]" />
           )}
         </div>
       </div>
