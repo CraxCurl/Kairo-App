@@ -84,7 +84,7 @@ All heavy AI reasoning and task executions are performed by the local LLM on the
 * Full chronological timeline exportable as JSON.
 
 ### 7. ⚙️ Settings & Device Pairing
-* QR Code scanning & JWT auth token pairing.
+* QR Code scanning & device pairing key authentication.
 * **Kairo Personalities**: *Focused Engineer*, *Casual Buddy*, *Strict Overseer*, *Concise Butler*.
 * Auto-approve safe read-only tasks toggle.
 * Startup behavior configuration (Auto-resume queue vs wait for user).

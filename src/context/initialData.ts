@@ -225,7 +225,7 @@ export const initialSettings: AppSettings = {
   laptopName: 'MacBook Pro M3 Max (Dev-Station)',
   laptopIp: '192.168.1.42',
   laptopPort: 8420,
-  authToken: 'kairo_live_jwt_7f8a9e2d_prod',
+  authToken: 'kairo-local-session-dev',
   kairoPersonality: 'focused',
   voiceEnabled: true,
   voiceAutoSpeak: true,

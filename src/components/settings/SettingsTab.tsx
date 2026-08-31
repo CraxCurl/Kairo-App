@@ -85,7 +85,7 @@ export const SettingsTab: React.FC = () => {
           </div>
 
           <div className="p-2 rounded-xl bg-[#111111] border border-[#1F1F1F] flex items-center justify-between">
-            <span className="text-[#666666] text-[10px] truncate">JWT: {settings.authToken.slice(0, 18)}...</span>
+            <span className="text-[#666666] text-[10px] truncate">Pair Key: {settings.authToken.slice(0, 18)}...</span>
             <span className="text-[10px] text-[#00E599] font-bold">ACTIVE</span>
           </div>
         </div>
