@@ -33,7 +33,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   ];
 
   return (
-    <div className="w-full fixed bottom-0 left-0 right-0 z-30 px-4 pb-4 pt-2 pointer-events-none flex justify-center max-w-lg mx-auto">
+    <div role="navigation" aria-label="Bottom navigation" className="w-full fixed bottom-0 left-0 right-0 z-30 px-4 pb-4 pt-2 pointer-events-none flex justify-center max-w-lg mx-auto">
       <div className="w-full bg-[#0A0A0A]/95 backdrop-blur-2xl border border-[#242424] shadow-[0_15px_40px_rgba(0,0,0,0.9)] rounded-2xl p-1 flex items-center justify-around pointer-events-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -41,11 +41,12 @@ export const BottomNav: React.FC<BottomNavProps> = ({
 
           if (item.isVoice) {
             return (
-              <button
-                key={item.id}
-                onClick={() => onSelectTab('voice')}
-                className="relative -top-3 group flex flex-col items-center focus:outline-none"
-              >
+               <button
+                 key={item.id}
+                 onClick={() => onSelectTab('voice')}
+                 aria-label="voice"
+                 className="relative -top-3 group flex flex-col items-center min-w-[48px] min-h-[48px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00DFD8]"
+               >
                 <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-200 ${
                   isActive 
                     ? 'bg-white text-black shadow-vercel-glow scale-105' 
@@ -62,16 +63,16 @@ export const BottomNav: React.FC<BottomNavProps> = ({
             );
           }
 
-          return (
-            <button
-              key={item.id}
-              onClick={() => onSelectTab(item.id)}
-              className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-150 relative active:scale-95 ${
-                isActive 
-                  ? 'text-white bg-[#141414]' 
-                  : 'text-[#666666] hover:text-[#A1A1A1]'
-              }`}
-            >
+          return <button
+                key={item.id}
+                onClick={() => onSelectTab(item.id)}
+                aria-label={item.label}
+                className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl min-w-[48px] min-h-[48px] transition-all duration-150 relative active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00DFD8] ${
+                  isActive 
+                    ? 'text-white bg-[#141414]' 
+                    : 'text-[#666666] hover:text-[#A1A1A1]'
+                }`}
+              >
               <div className="relative">
                 <Icon className={`w-4 h-4 transition-transform ${
                   isActive ? 'scale-105 text-white' : ''
