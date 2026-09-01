@@ -63,16 +63,17 @@ export const BottomNav: React.FC<BottomNavProps> = ({
             );
           }
 
-          return <button
-                key={item.id}
-                onClick={() => onSelectTab(item.id)}
-                aria-label={item.label}
-                className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl min-w-[48px] min-h-[48px] transition-all duration-150 relative active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00DFD8] ${
-                  isActive 
-                    ? 'text-white bg-[#141414]' 
-                    : 'text-[#666666] hover:text-[#A1A1A1]'
-                }`}
-              >
+          return (
+            <button
+              key={item.id}
+              onClick={() => onSelectTab(item.id)}
+              aria-label={item.label}
+              className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl min-w-[48px] min-h-[48px] transition-all duration-150 relative active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00DFD8] ${
+                isActive 
+                  ? 'text-white bg-[#141414]' 
+                  : 'text-[#666666] hover:text-[#A1A1A1]'
+              }`}
+            >
               <div className="relative">
                 <Icon className={`w-4 h-4 transition-transform ${
                   isActive ? 'scale-105 text-white' : ''
