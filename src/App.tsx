@@ -22,7 +22,7 @@ export const KairoAppContent: React.FC = () => {
   const [isNotificationDrawerOpen, setIsNotificationDrawerOpen] = useState(false);
 
   return (
-    <div className="w-full flex-1 flex flex-col relative bg-[#000000] text-[#EDEDED] font-sans">
+    <div className="w-full flex-1 flex flex-col min-h-screen overflow-y-auto relative bg-[#000000] text-[#EDEDED] font-sans">
       {/* Mobile Top Status Bar */}
       <StatusBar />
 
