@@ -6,9 +6,7 @@ import {
   Loader2, 
   Check, 
   Plus,
-  Terminal,
-  ListTree,
-  Sparkles
+  Terminal
 } from 'lucide-react';
 import { useKairo } from '../../context/KairoContext';
 import { Priority, TaskTrigger, Task } from '../../types';
@@ -278,6 +276,71 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ isOpen, onClos
                   <option value="high">High</option>
                   <option value="critical">Critical</option>
                 </select>
+              </div>
+            </div>
+
+            {trigger === 'specific_datetime' && (
+              <div className="grid grid-cols-2 gap-2 font-mono">
+                <div className="space-y-1">
+                  <label className="text-[#888888]">Date</label>
+                  <input
+                    type="date"
+                    value={scheduledDate}
+                    onChange={(e) => setScheduledDate(e.target.value)}
+                    className="w-full p-2 rounded-xl bg-black border border-[#282828] text-white"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[#888888]">Time</label>
+                  <input
+                    type="time"
+                    value={scheduledTime}
+                    onChange={(e) => setScheduledTime(e.target.value)}
+                    className="w-full p-2 rounded-xl bg-black border border-[#282828] text-white"
+                  />
+                </div>
+              </div>
+            )}
+
+            {trigger === 'after_task' && (
+              <div className="space-y-1 font-mono">
+                <label className="text-[#888888]">Prerequisite Task</label>
+                <select
+                  value={afterTaskId}
+                  onChange={(e) => setAfterTaskId(e.target.value)}
+                  className="w-full p-2 rounded-xl bg-black border border-[#282828] text-white"
+                >
+                  <option value="">-- Select Parent Task --</option>
+                  {tasks.map(t => (
+                    <option key={t.id} value={t.id}>{t.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Tag Chips */}
+            <div className="space-y-1.5 font-mono">
+              <label className="text-[#888888]">Tags</label>
+              <div className="flex flex-wrap items-center gap-1">
+                {tags.map(tag => (
+                  <span key={tag} className="px-2 py-0.5 rounded-md bg-[#111111] border border-[#262626] text-[10px] text-[#EDEDED] flex items-center gap-1">
+                    #{tag}
+                    <button type="button" onClick={() => handleRemoveTag(tag)} className="text-[#666666] hover:text-white">&times;</button>
+                  </span>
+                ))}
+              </div>
+              <div className="flex items-center gap-1 pt-1">
+                <input
+                  type="text"
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddTag(); } }}
+                  placeholder="add tag & press Enter..."
+                  className="flex-1 p-1.5 rounded-lg bg-black border border-[#242424] text-white text-xs font-mono"
+                />
+                <button type="button" onClick={handleAddTag} className="px-2.5 py-1.5 rounded-lg vercel-btn-secondary text-xs">
+                  add
+                </button>
               </div>
             </div>
 

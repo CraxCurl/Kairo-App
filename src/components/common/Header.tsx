@@ -84,8 +84,9 @@ export const Header: React.FC<HeaderProps> = ({ onOpenNotifications }) => {
           {/* Auth Needed alert pill */}
           {confirmationQueue.length > 0 && (
             <button 
-              onClick={() => {}}
+              onClick={onOpenNotifications}
               className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#1F1500] border border-[#F5A623]/60 text-[#F5A623] text-xs font-mono font-medium animate-pulse"
+              title="Remote authorization required!"
             >
               <AlertTriangle className="w-3 h-3" />
               <span>auth_req</span>

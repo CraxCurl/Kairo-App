@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import confetti from 'canvas-confetti';
 import { 
   Task, 
   KairoStatusMode, 
@@ -189,6 +190,126 @@ export const KairoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, [tasks, confirmationQueue.length]);
 
+  const hasInProgressTask = tasks.some(t => t.status === 'in_progress');
+
+  // Reactive Simulation Loop for Active Task Execution
+  useEffect(() => {
+    if (!laptop.online || confirmationQueue.length > 0) return;
+    if (!hasInProgressTask) return;
+
+    const timer = setInterval(() => {
+      setTasks(prevTasks => {
+        const idx = prevTasks.findIndex(t => t.status === 'in_progress');
+        if (idx === -1) return prevTasks;
+        const task = prevTasks[idx];
+        const newProgress = Math.min(100, task.progress + Math.floor(Math.random() * 10) + 8);
+        const steps = task.steps ? [...task.steps] : [];
+
+        // Update step completion based on progress ratio
+        if (steps.length > 0) {
+          const completedStepCount = Math.floor((newProgress / 100) * steps.length);
+          steps.forEach((s, i) => {
+            if (i < completedStepCount) {
+              s.completed = true;
+              s.current = false;
+            } else if (i === completedStepCount) {
+              s.completed = false;
+              s.current = true;
+            } else {
+              s.completed = false;
+              s.current = false;
+            }
+          });
+        }
+
+        const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const newLogs = [...(task.executionLogs || [])];
+        if (newProgress < 100 && Math.random() > 0.4) {
+          const sampleLogs = [
+            `[${nowStr}] Worker thread active: processing sub-routine`,
+            `[${nowStr}] Verified AST node & executed compiler pass`,
+            `[${nowStr}] Streaming telemetry to companion app`,
+            `[${nowStr}] Host system CPU load optimal`
+          ];
+          const randomLog = sampleLogs[Math.floor(Math.random() * sampleLogs.length)];
+          if (!newLogs.includes(randomLog)) {
+            newLogs.push(randomLog);
+          }
+        }
+
+        if (newProgress >= 100) {
+          // Task completed! Trigger celebration & auto-chain next
+          try {
+            confetti({ particleCount: 75, spread: 70, origin: { y: 0.6 } });
+          } catch {}
+
+          addTimelineEvent('task_complete', `Completed "${task.name}"`, 'Resolved successfully on laptop agent.', task.id);
+          addNotification('task_completed', 'Task Completed! 🎉', `"${task.name}" has successfully finished execution.`, task.id);
+
+          const updatedTasks = prevTasks.map((t, i) => {
+            if (i === idx) {
+              return {
+                ...t,
+                status: 'completed' as const,
+                progress: 100,
+                completedAt: new Date().toISOString(),
+                steps: steps.map(s => ({ ...s, completed: true, current: false })),
+                executionLogs: [...newLogs, `[${nowStr}] Pipeline execution resolved successfully [100%]`]
+              };
+            }
+            return t;
+          });
+
+          // Auto-start next waiting task
+          const nextWaitingIndex = updatedTasks.findIndex(t => t.status === 'waiting');
+          if (nextWaitingIndex !== -1) {
+            updatedTasks[nextWaitingIndex] = {
+              ...updatedTasks[nextWaitingIndex],
+              status: 'in_progress' as const
+            };
+            addTimelineEvent('task_start', `Started "${updatedTasks[nextWaitingIndex].name}"`, 'Auto-commenced next queued task.', updatedTasks[nextWaitingIndex].id);
+          }
+          return updatedTasks;
+        }
+
+        return prevTasks.map((t, i) => i === idx ? {
+          ...t,
+          progress: newProgress,
+          steps,
+          executionLogs: newLogs
+        } : t);
+      });
+    }, 2000);
+
+    return () => clearInterval(timer);
+  }, [laptop.online, confirmationQueue.length, hasInProgressTask, addTimelineEvent, addNotification]);
+
+  // Telemetry Fluctuation Loop
+  useEffect(() => {
+    if (!laptop.online) return;
+    const interval = setInterval(() => {
+      setLaptop(prev => {
+        const activeT = tasks.find(t => t.status === 'in_progress');
+        const cpuDelta = (Math.random() - 0.5) * 8;
+        const newCpu = Math.max(10, Math.min(85, Math.round(prev.cpuLoad + cpuDelta)));
+        const ramDelta = (Math.random() - 0.5) * 4;
+        const newRam = Math.max(25, Math.min(75, Math.round(prev.ramUsage + ramDelta)));
+        const newBattery = prev.isCharging ? Math.min(100, prev.batteryLevel + 0.1) : Math.max(5, prev.batteryLevel - 0.1);
+        const appName = activeT ? `Executing: ${activeT.name}` : 'VS Code - dev-station';
+
+        return {
+          ...prev,
+          cpuLoad: newCpu,
+          ramUsage: newRam,
+          batteryLevel: newBattery,
+          activeApp: appName
+        };
+      });
+    }, 3500);
+
+    return () => clearInterval(interval);
+  }, [laptop.online, tasks]);
+
   const startTask = (taskId: string) => {
     setTasks(prev => prev.map(t => {
       if (t.id === taskId) {
@@ -232,6 +353,10 @@ export const KairoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const completeCurrentTask = () => {
     if (!currentTask) return;
+    try {
+      confetti({ particleCount: 75, spread: 70, origin: { y: 0.6 } });
+    } catch {}
+
     setTasks(prev => prev.map(t => t.id === currentTask.id ? {
       ...t,
       status: 'completed',
@@ -241,6 +366,7 @@ export const KairoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     } : t));
     api.updateTask(currentTask.id, { status: 'completed', progress: 100, completedAt: new Date().toISOString() });
     addTimelineEvent('task_complete', `Completed "${currentTask.name}"`, 'Resolved successfully.', currentTask.id);
+    addNotification('task_completed', 'Task Completed! 🎉', `"${currentTask.name}" marked complete.`, currentTask.id);
     
     const nextTask = tasks.find(t => t.status === 'waiting' && t.id !== currentTask.id);
     if (nextTask) {
@@ -400,34 +526,60 @@ export const KairoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
       action = "Queried upcoming task";
     } 
-    else if (lower.includes("is my laptop online") || lower.includes("status")) {
+    else if (lower.includes("is my laptop online") || lower.includes("status") || lower.includes("laptop online")) {
       responseText = laptop.online 
-        ? `${laptop.deviceName} is Online. Battery at ${Math.round(laptop.batteryLevel)}%.`
+        ? `${laptop.deviceName} is Online. CPU load at ${laptop.cpuLoad}%, Battery at ${Math.round(laptop.batteryLevel)}%.`
         : `Laptop is currently Offline.`;
       action = "Checked node status";
     }
+    else if (lower.includes("move") && lower.includes("top")) {
+      if (tasks.length > 0) {
+        const targetTask = tasks.find(t => lower.includes(t.name.toLowerCase())) || tasks[tasks.length - 1];
+        moveTaskToTop(targetTask.id);
+        responseText = `Moved "${targetTask.name}" to top of queue.`;
+        action = "Moved task to top";
+      } else {
+        responseText = "No tasks in queue to reorder.";
+        action = "Reorder attempt failed";
+      }
+    }
+    else if (lower.includes("completed") || lower.includes("done") || lower.includes("finish current")) {
+      if (currentTask) {
+        completeCurrentTask();
+        responseText = `Marked "${currentTask.name}" as completed! 🎉`;
+        action = "Completed active task";
+      } else {
+        responseText = "No active task in progress to complete.";
+        action = "Complete task attempt";
+      }
+    }
     else if (lower.includes("pause")) {
       pauseKairo();
-      responseText = "Paused Kairo pipeline.";
+      responseText = "Paused Kairo execution pipeline.";
       action = "Paused pipeline";
     }
     else if (lower.includes("resume") || lower.includes("start")) {
       resumeKairo();
-      responseText = "Resumed Kairo pipeline.";
+      responseText = "Resumed Kairo execution pipeline.";
       action = "Resumed pipeline";
     }
     else if (lower.includes("skip")) {
-      skipCurrentTask();
-      responseText = "Skipped active task.";
-      action = "Skipped task";
+      if (currentTask) {
+        skipCurrentTask();
+        responseText = `Skipped "${currentTask.name}".`;
+        action = "Skipped active task";
+      } else {
+        responseText = "No active task to skip.";
+        action = "Skip attempt";
+      }
     }
-    else if (lower.startsWith("add ") || lower.includes("remind me")) {
+    else if (lower.startsWith("add ") || lower.includes("remind me") || lower.includes("schedule")) {
       const created = await createTasksFromNaturalLanguage(transcript);
-      responseText = `Added ${created.length} task(s) to your queue.`;
+      responseText = `Successfully created ${created.length} task(s) on your desktop queue.`;
       action = `Created ${created.length} task(s)`;
     }
     else {
-      responseText = `Command "${transcript}" dispatched to desktop agent.`;
+      responseText = `Dispatched instruction "${transcript}" to Kairo Desktop Agent.`;
       action = "Sent prompt to agent";
     }
 
@@ -456,6 +608,11 @@ export const KairoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setLaptop(prev => {
       const next = !prev.online;
       addTimelineEvent('system', next ? 'Laptop came online' : 'Laptop went offline');
+      addNotification(
+        next ? 'laptop_online' : 'task_failed',
+        next ? 'Laptop Came Online' : 'Laptop Disconnected',
+        next ? 'Desktop agent node reconnected.' : 'Companion node is now offline.'
+      );
       return { ...prev, online: next };
     });
   };
@@ -484,15 +641,16 @@ export const KairoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       createdAt: new Date().toISOString()
     };
     setConfirmationQueue(prev => [newConf, ...prev]);
+    addNotification('needs_confirmation', 'Remote Auth Request', `Authorization needed for "${currentTask?.name || 'Java Assignment'}".`, currentTask?.id);
   };
 
   const resetToDefaults = () => {
     localStorage.clear();
-    setTasks([]);
+    setTasks(initialTasks);
     setLaptop(initialLaptop);
     setTimeline(initialTimeline);
-    setVoiceHistory([]);
-    setNotifications([]);
+    setVoiceHistory(initialVoiceExchanges);
+    setNotifications(initialNotifications);
     setSettings(initialSettings);
     setConfirmationQueue([]);
   };
